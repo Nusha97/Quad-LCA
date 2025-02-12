@@ -14,8 +14,11 @@ Key contributions include:
 
 ## Repository Structure
 
-- `src/`: Contains the source code for trajectory generation and control algorithms.
+- `src/`: Contains the source code for Python-based ROS interface.
+- `scripts/`: Contains the source code for the neural network architecture, the learned tracking penalty regularizer, the online planner.
+- `configs/`: Contains the configuration parameters for both the unicycle and the quadrotor experiments.
 - `data/`: Includes datasets from system rollouts used for learning the tracking penalty regularizer.
+- `notebooks/': Includes Python notebooks to help visualize and debug different components of the code.
 - `models/`: Pre-trained models and parameters for the unicycle and quadrotor systems.
 - `experiments/`: Scripts and configurations to reproduce the experiments presented in the paper.
 - `docs/`: Documentation and supplementary materials.
@@ -26,8 +29,8 @@ To set up the environment, follow these steps:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/dynamics-aware-trajectory-synthesis.git
-   cd dynamics-aware-trajectory-synthesis
+   git clone git@github.com:Nusha97/Quadrotor-planning-via-control-decomposition.git
+   cd Quadrotor-planning-via-control-decomposition
    ```
 
 2. **Create a virtual environment** (optional but recommended):
@@ -43,6 +46,13 @@ To set up the environment, follow these steps:
 
 ## Usage
 
+### Data collection for unicycle
+
+To generate training data for the unicycle model:
+```bash
+python scripts/generate_data.py --config configs/unicycle.yaml
+```
+
 ### Training the Tracking Penalty Regularizer
 
 To train the tracking penalty regularizer from system rollouts:
@@ -53,7 +63,7 @@ python src/train_regularizer.py --config configs/unicycle.yaml
 
 Replace `configs/unicycle.yaml` with the appropriate configuration file for your system (e.g., `quadrotor.yaml` for the quadrotor system).
 
-### Generating Dynamics-Aware Trajectories
+### Running inference to plan dynamics-aware trajectories
 
 After training the regularizer, generate trajectories using:
 
