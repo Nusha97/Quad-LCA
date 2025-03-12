@@ -1,8 +1,0 @@
-prefix=/home/anusha/cleanup_ws/install
-
-Name: layered_quadrotor_control
-Description: Description of layered_quadrotor_control
-Version: 0.0.1
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: roscpp rosbag message_filters cv_bridge image_transport kr_mav_msgs

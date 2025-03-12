@@ -1,7 +1,0 @@
-set(layered_quadrotor_control_SETUP_PY_SETUP_MODULE "distutils.core")
-set(layered_quadrotor_control_SETUP_PY_VERSION "0.0.1")
-set(layered_quadrotor_control_SETUP_PY_SCRIPTS "")
-set(layered_quadrotor_control_SETUP_PY_PACKAGES "layered_quadrotor_control")
-set(layered_quadrotor_control_SETUP_PY_PACKAGE_DIRS "src/layered_quadrotor_control")
-set(layered_quadrotor_control_SETUP_PY_MODULES "")
-set(layered_quadrotor_control_SETUP_PY_MODULE_DIRS "")
