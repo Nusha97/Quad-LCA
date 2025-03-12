@@ -10,14 +10,15 @@ import numpy as np
 import random
 
 from kr_tracker_msgs.msg import LissajousTrackerGoal, LissajousTrackerAction
-from layered_ref_control.mav_layer_interface import KrMavInterface
+from scripts.mav_layer_interface import KrMavInterface
 
-from trajgen import nonlinear, quadratic, trajutils, quadrotor
-from learning import lstd, trajdata, valuefunc
-from env import baseenv, linearenv, controller
-import torch
+# from trajgen import nonlinear, quadratic, trajutils, quadrotor
+from learning import quadratic
+# from learning import lstd, trajdata, valuefunc
+# from env import baseenv, linearenv, controller
+# import torch
 import pickle
-import sys
+# import sys
 
 
 PI = np.pi

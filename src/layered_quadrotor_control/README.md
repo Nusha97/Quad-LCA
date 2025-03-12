@@ -1,6 +1,6 @@
-# A ros package for layered control architectures applied to quadrotor trajectory generation and control
+# A Data-Driven Approach to Synthesizing Dynamics-Aware Trajectories for Underactuated Robotic Systems
 
-This repository contains the implementation of the methods described in the paper "[A Data-Driven Approach to Synthesizing Dynamics-Aware Trajectories for Underactuated Robotic Systems](https://arxiv.org/abs/2307.13782)" by Anusha Srikanthan et al. In this paper, we showed how one can derive a dynamics-aware trajectory generation problem for motion planning and use value iteration to approximately learn an objective function denoting deviation of the optimized reference trajectory and system executed trajectory.
+This repository contains the implementation of the methods described in the paper "[A Data-Driven Approach to Synthesizing Dynamics-Aware Trajectories for Underactuated Robotic Systems](https://arxiv.org/abs/2307.13782)" by Anusha Srikanthan et al. The paperwe showed how one can derive a dynamics-aware trajectory generation problem for motion planning and use value iteration to approximately learn an objective function denoting deviation of the optimized reference trajectory and system executed trajectory. 
 
 ## Overview
 
@@ -43,6 +43,49 @@ To set up the environment, follow these steps:
    ```bash
    pip install -r requirements.txt
    ```
+
+## Usage
+
+### Data collection for unicycle
+
+To generate training data for the unicycle model:
+```bash
+python scripts/generate_data.py --config configs/unicycle.yaml
+```
+
+### Training the Tracking Penalty Regularizer
+
+To train the tracking penalty regularizer from system rollouts:
+
+```bash
+python src/train_regularizer.py --config configs/unicycle.yaml
+```
+
+Replace `configs/unicycle.yaml` with the appropriate configuration file for your system (e.g., `quadrotor.yaml` for the quadrotor system).
+
+### Running inference to plan dynamics-aware trajectories
+
+After training the regularizer, generate trajectories using:
+
+```bash
+python src/generate_trajectory.py --config configs/unicycle.yaml
+```
+
+The generated trajectories will be saved in the `results/` directory.
+
+### Running Simulations
+
+To simulate the system following the generated trajectories:
+
+```bash
+python src/simulate.py --config configs/unicycle.yaml
+```
+
+Simulation results, including performance metrics and plots, will be stored in the `results/` directory.
+
+## Reproducing Paper Experiments
+
+The `experiments/` directory contains scripts and configurations to reproduce the experiments detailed in the paper. Refer to the `README.md` within that directory for specific instructions.
 
 ## Citing This Work
 
