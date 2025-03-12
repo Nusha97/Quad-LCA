@@ -1,0 +1,5 @@
+Symlinking /home/anusha/cleanup_ws/devel/share/layered_quadrotor_control/cmake/layered_quadrotor_controlConfig-version.cmake
+Symlinking /home/anusha/cleanup_ws/devel/share/layered_quadrotor_control/cmake/layered_quadrotor_controlConfig.cmake
+Symlinking /home/anusha/cleanup_ws/devel/lib/pkgconfig/layered_quadrotor_control.pc
+Symlinking /home/anusha/cleanup_ws/devel/lib/python3/dist-packages/layered_quadrotor_control/__init__.py
+Symlinking /home/anusha/cleanup_ws/devel/lib/layered_quadrotor_control/sync_msg

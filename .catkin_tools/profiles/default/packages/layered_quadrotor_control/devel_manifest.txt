@@ -1,0 +1,7 @@
+layered_quadrotor_control
+/home/anusha/cleanup_ws/devel/.private/layered_quadrotor_control/cmake.lock /home/anusha/cleanup_ws/devel/./cmake.lock
+/home/anusha/cleanup_ws/devel/.private/layered_quadrotor_control/share/layered_quadrotor_control/cmake/layered_quadrotor_controlConfig-version.cmake /home/anusha/cleanup_ws/devel/share/layered_quadrotor_control/cmake/layered_quadrotor_controlConfig-version.cmake
+/home/anusha/cleanup_ws/devel/.private/layered_quadrotor_control/share/layered_quadrotor_control/cmake/layered_quadrotor_controlConfig.cmake /home/anusha/cleanup_ws/devel/share/layered_quadrotor_control/cmake/layered_quadrotor_controlConfig.cmake
+/home/anusha/cleanup_ws/devel/.private/layered_quadrotor_control/lib/pkgconfig/layered_quadrotor_control.pc /home/anusha/cleanup_ws/devel/lib/pkgconfig/layered_quadrotor_control.pc
+/home/anusha/cleanup_ws/devel/.private/layered_quadrotor_control/lib/python3/dist-packages/layered_quadrotor_control/__init__.py /home/anusha/cleanup_ws/devel/lib/python3/dist-packages/layered_quadrotor_control/__init__.py
+/home/anusha/cleanup_ws/devel/.private/layered_quadrotor_control/lib/layered_quadrotor_control/sync_msg /home/anusha/cleanup_ws/devel/lib/layered_quadrotor_control/sync_msg

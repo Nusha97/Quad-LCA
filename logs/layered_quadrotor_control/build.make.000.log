@@ -1,0 +1,3 @@
+[ 50%] [32mBuilding CXX object CMakeFiles/sync_msg.dir/src/sync_msg/sync_msg.cpp.o[0m
+[100%] [32m[1mLinking CXX executable /home/anusha/cleanup_ws/devel/.private/layered_quadrotor_control/lib/layered_quadrotor_control/sync_msg[0m
+[100%] Built target sync_msg
