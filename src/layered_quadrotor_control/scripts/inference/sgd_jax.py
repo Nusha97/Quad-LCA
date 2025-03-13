@@ -1,9 +1,9 @@
-import numpy as np
-from jaxopt import ProjectedGradient, GradientDescent, NonlinearCG, BacktrackingLineSearch
-from jaxopt.projection import projection_affine_set
-import jax.numpy as jnp
-from jax import grad, jit
-import jax
+import numpy as np # type: ignore
+from jaxopt import ProjectedGradient # type: ignore
+from jaxopt.projection import projection_affine_set # type: ignore
+import jax.numpy as jnp # type: ignore
+from jax import jit # type: ignore
+import jax # type: ignore
 import time
 
 jax.config.update("jax_enable_x64", True)

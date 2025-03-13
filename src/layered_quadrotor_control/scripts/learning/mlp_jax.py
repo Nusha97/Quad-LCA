@@ -14,13 +14,12 @@ VERSION
     0.0
 """
 
-import flax
-from flax import linen as nn
-
-import torch.nn as tnn
-import torch.nn.functional as F
-import torch
-import numpy as np
+# import flax
+from flax import linen as nn # type: ignore
+import torch.nn as tnn # type: ignore
+import torch.nn.functional as F # type: ignore
+# import torch
+# import numpy as np
 
 
 class MLP(nn.Module):
