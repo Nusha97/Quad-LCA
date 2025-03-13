@@ -11,7 +11,7 @@ from nav_msgs.msg import Odometry
 from std_srvs.srv import SetBool, Trigger
 from kr_tracker_msgs.msg import TrajectoryTrackerAction, TrajectoryTrackerGoal
 
-from layered_ref_control.mav_layer_interface import KrMavInterface
+from layered_quadrotor_control.mav_layer_interface import KrMavInterface
 from trajgen import nonlinear, quadratic, trajutils, quadrotor
 from learning import lstd, trajdata, valuefunc
 from env import baseenv, linearenv, controller

@@ -3,8 +3,8 @@ from __future__ import print_function
 
 import rospy
 import actionlib
-import numpy as np
-import rosbag
+import numpy as np # type: ignore
+# import rosbag
 
 import tf
 from geometry_msgs.msg import Twist, Pose, Point, Vector3

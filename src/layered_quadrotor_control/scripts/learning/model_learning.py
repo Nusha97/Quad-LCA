@@ -14,28 +14,28 @@ LICENSE
 VERSION
     0.0
 """
-from flax import linen as nn
-from flax.training import checkpoints  # need to install tensorflow
-import torch.utils.data as data
-import numpy as np
-import optax
+from flax import linen as nn # type: ignore
+from flax.training import checkpoints  # type: ignore # need to install tensorflow
+# import torch.utils.data as data
+import numpy as np # type: ignore
+import optax # type: ignore
 
 ## Progress bar
-from tqdm.auto import tqdm
+from tqdm.auto import tqdm # type: ignore
 
-import jax
-import jax.numpy as jnp
-from torch.utils.data import Dataset
-import torch
-import cvxpy as cp
-from jax.scipy.optimize import minimize
-from jaxopt import ProjectedGradient
-from jaxopt.projection import projection_affine_set
-from jax import grad, jit
-from jaxopt import LBFGS
-from torch.utils.tensorboard import SummaryWriter
-import scipy.linalg as spl
-from trajgen.trajutils import _cost_matrix, _diff_coeff
+import jax # type: ignore
+import jax.numpy as jnp # type: ignore
+from torch.utils.data import Dataset # type: ignore
+import torch # type: ignore
+# import cvxpy as cp
+# from jax.scipy.optimize import minimize
+from jaxopt import ProjectedGradient # type: ignore
+from jaxopt.projection import projection_affine_set # type: ignore
+from jax import grad, jit # type: ignore
+# from jaxopt import LBFGS
+from torch.utils.tensorboard import SummaryWriter # type: ignore
+import scipy.linalg as spl # type: ignore
+from trajgen.trajutils import _cost_matrix, _diff_coeff # type: ignore
 
 
 writer = SummaryWriter()
@@ -148,14 +148,14 @@ def save_checkpoint(state, workdir, step=0):
 
 
 def coeff2traj(coeffs, order, ts, numsteps):
-    ''' Constructs a trajectory from polynomial coefficients
+    """Constructs a trajectory from polynomial coefficients
     Input:
         - coeffs:       np.array(p, #segments, polynomial order)
         - ts:           np.array(#segments+1), timestamps
         - numsteps:     Integer, number of time steps in the resulting traj
     Return:
         - traj:         np.array(numsteps), trajectory from coeffs
-    '''
+    """
     # p = coeffs.shape[0]
     p = 4
     ref = jnp.zeros([p, numsteps])
