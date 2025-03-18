@@ -5,8 +5,8 @@ collect data with different penalty values
 from rotorpy.controllers.quadrotor_control import SE3Control
 from rotorpy.vehicles.multirotor import Multirotor
 from rotorpy.trajectories.minsnap import MinSnap
-from rotorpy.vehicles.crazyflie_params import quad_params
-from rotorpy.vehicles.hummingbird_params import hummingbird_params
+# from rotorpy.vehicles.crazyflie_params import quad_params
+from rotorpy.vehicles.hummingbird_params import quad_params
 from rotorpy.environments import Environment
 from rotorpy.world import World
 from rotorpy.utils.occupancy_map import OccupancyMap
@@ -27,9 +27,9 @@ from scipy.spatial.transform import Rotation as R
 # quad_params["c_Dy"] = 0.65e-2
 # quad_params["c_Dz"] = 1.1e-2
 
-quad_params["c_Dx"] = 0.5e-2  # config 3
-quad_params["c_Dy"] = 0.5e-2
-quad_params["c_Dz"] = 1e-2
+# quad_params["c_Dx"] = 0.5e-2  # config 3
+# quad_params["c_Dy"] = 0.5e-2
+# quad_params["c_Dz"] = 1e-2
 
 # quad_params["c_Dx"] = 0.35e-2  # config 2
 # quad_params["c_Dy"] = 0.35e-2
@@ -47,7 +47,7 @@ Functions for generating instances of RotorPy for data collection.
 """
 # save_path = "/workspace/data_output"
 # save_path = "/home/user/code/quadrotor-drag-exp/data"
-save_path = cwd + "/../../" + "data"
+save_path = cwd + "/data"
 
 print("Path to save to", save_path)
 
@@ -703,10 +703,10 @@ def main(num_simulations, parallel_bool, save_trials=False):
             world_size / 2,
         ]
     )
-    # vehicle = Multirotor(quad_params)
-    # controller = SE3Control(quad_params)
-    vehicle = Multirotor(hummingbird_params)
-    controller = SE3Control(hummingbird_params)
+    vehicle = Multirotor(quad_params)
+    controller = SE3Control(quad_params)
+    # vehicle = Multirotor(hummingbird_params)
+    # controller = SE3Control(hummingbird_params)
 
     # Generate the data
     start_time = time.time()
