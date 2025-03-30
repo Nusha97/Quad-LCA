@@ -7,13 +7,13 @@ import random
 from construct_traj_list import *
 import numpy as np
 import matplotlib.pyplot as plt
-from model_learning import restore_checkpoint, linear_map_coeff, coeff2traj
+from scripts.model_learning import restore_checkpoint, linear_map_coeff, coeff2traj
 
 import ruamel.yaml as yaml
 from flax.training import train_state
 import optax
 import jax
-from mlp_jax import MLP, MLP_torch
+from scripts.mlp_jax import MLP, MLP_torch
 
 from trajgen import nonlinear, quadratic, quadrotor
 import rospy

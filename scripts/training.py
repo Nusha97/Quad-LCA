@@ -20,7 +20,7 @@ import jax
 from mlp_jax import MLP
 # from ficnn_jax import FICNN
 # import pandas as pd
-import torch
+# import torch
 
 # import tf
 import transforms3d.euler as euler
@@ -148,11 +148,13 @@ def angle_wrap(theta):
 
 def main():
     rho = 1
-    drag_coeff = 4
+    # drag_coeff = 4
+    drag_coeff = 3
 
     with open(
         # r"/home/user/code/quadrotor-drag-exp/AeroWrenchPlanner/learning/params.yaml"
-        r"/workspace/AeroWrenchPlanner/learning/params.yaml"
+        # r"/workspace/AeroWrenchPlanner/learning/params.yaml"
+        r"/home/sanusha/codes/Quadrotor-planning-via-control-decomposition/configs/params.yaml"
     ) as f:
         yaml_data = yaml.load(f, Loader=yaml.RoundTripLoader)
 
@@ -225,7 +227,8 @@ def main():
     """
     # Path to your CSV file
     # csv_file_path = "/workspace/data_output/data_diff_rho.csv"
-    csv_file_path = cwd + "/../../data/data_diff_rho_drag" + str(drag_coeff) + ".csv"
+    csv_file_path = "/home/sanusha/codes/Quadrotor-planning-via-control-decomposition/data/data_diff_rho_drag" + str(drag_coeff) + ".csv"
+    # csv_file_path = cwd + "/../../data/data_diff_rho_drag" + str(drag_coeff) + ".csv"
     # csv_file_path = "/home/user/code/quadrotor-drag-exp/data/data_diff_rho.csv"
 
     train_dataset = TrajDataset(file_path=csv_file_path, feature_range=(-1, 1))
@@ -282,7 +285,7 @@ def main():
 
     trained_model = model.bind(trained_model_state.params)
     # save checkpoint
-    save_checkpoint(trained_model_state, model_save, 7)
+    # save_checkpoint(trained_model_state, model_save, 0)
 
     # restore checkpoint
     # trained_model_state = restore_checkpoint(model_state, model_save, 7)
@@ -317,7 +320,8 @@ def main():
     print("true's shape", true.shape)
 
     ## Plotting and saving trajectories for each trial file
-    plots_dir = '/workspace/data/plots_train/'
+    plots_dir = "/home/sanusha/codes/Quadrotor-planning-via-control-decomposition/scripts/plots_train/"
+    # plots_dir = '/workspace/data/plots_train/'
     # plots_dir = "/home/user/code/quadrotor-drag-exp/plots_train/"
     # plots_dir = cwd + "/../../data/plots_train/" 
     # plots_dir = cwd + "/../../data/plots_train/" 

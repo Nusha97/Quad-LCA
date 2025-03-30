@@ -14,16 +14,19 @@ import sys
 import ruamel.yaml as yaml
 import flax
 import optax
+from flax.training import train_state
 import jax
-from learning.mlp_jax import MLP
-from learning.model_learning import restore_checkpoint
+from scripts.mlp_jax import MLP
+from scripts.model_learning import restore_checkpoint, train_model, numpy_collate, TrajDataset
+import torch.utils.data as data
+from sklearn.model_selection import train_test_split 
 from scipy.spatial.transform import Rotation as R
 import time
 from rotorpy.utils.occupancy_map import OccupancyMap
 from rotorpy.controllers.quadrotor_control import SE3Control
 # from rotorpy.controllers.quadrotor_l1control import L1SE3Control
 from rotorpy.vehicles.multirotor import Multirotor
-from layered_quadrotor_control.scripts.inference.regularized_trajectory import RegularizedTrajectory
+# from layered_quadrotor_control.scripts.inference.regularized_trajectory import RegularizedTrajectory
 from rotorpy.vehicles.crazyflie_params import quad_params
 from rotorpy.environments import Environment
 from rotorpy.world import World
@@ -1372,30 +1375,101 @@ def main():
     drag_coeff = 3
     input_size = 96  # number of coeff
 
-    # with open(r"/workspace/rotorpy/learning/params.yaml") as f:
-    with open(r"/home/user/code/quadrotor-drag-exp/AeroWrenchPlanner/learning/params.yaml") as f:
+    with open(
+        # r"/home/user/code/quadrotor-drag-exp/AeroWrenchPlanner/learning/params.yaml"
+        # r"/workspace/AeroWrenchPlanner/learning/params.yaml"
+        r"/home/sanusha/codes/Quadrotor-planning-via-control-decomposition/configs/params.yaml"
+    ) as f:
         yaml_data = yaml.load(f, Loader=yaml.RoundTripLoader)
 
     num_hidden = yaml_data["num_hidden"]
+    batch_size = yaml_data["batch_size"]
+    learning_rate = yaml_data["learning_rate"]
+    num_epochs = yaml_data["num_epochs"]
+    model_save = yaml_data["save_path"] + str(rho) + str(drag_coeff)
 
-    # Load the trained model
-    model = MLP(num_hidden=num_hidden, num_outputs=1)
-    # Printing the model shows its attributes
-    print(model)
+    # with open(r"/workspace/rotorpy/learning/params.yaml") as f:
+    # with open(r"/home/user/code/quadrotor-drag-exp/AeroWrenchPlanner/learning/params.yaml") as f:
+    #     yaml_data = yaml.load(f, Loader=yaml.RoundTripLoader)
+
+    # num_hidden = yaml_data["num_hidden"]
+
+    # Path to your CSV file
+    # csv_file_path = "/workspace/data_output/data_diff_rho.csv"
+    csv_file_path = "/home/sanusha/codes/Quadrotor-planning-via-control-decomposition/data/data_diff_rho_drag" + str(drag_coeff) + ".csv"
+    # csv_file_path = cwd + "/../../data/data_diff_rho_drag" + str(drag_coeff) + ".csv"
+    # csv_file_path = "/home/user/code/quadrotor-drag-exp/data/data_diff_rho.csv"
+
+    train_dataset = TrajDataset(file_path=csv_file_path, feature_range=(-1, 1))
+
+    # Split the dataset into training and testing subsets
+    train_data, test_data = train_test_split(
+        train_dataset,
+        test_size=0.2,  # Specify the proportion of the dataset to use for testing (e.g., 0.2 for 20%)
+        random_state=42,  # Set a random seed for reproducibility
+    )
+
+    print("Training data length: ", len(train_data))
+    print("Testing data length: ", len(test_data))
+
+    # Initialize the model
+    number_of_coefficients = train_dataset.num_coefficients()
+    p = number_of_coefficients  # Set this to the number of coefficients in your dataset
+    print("Number of coefficients:", number_of_coefficients)
 
     rng = jax.random.PRNGKey(427)
     rng, inp_rng, init_rng = jax.random.split(rng, 3)
+    inp = jax.random.normal(inp_rng, (batch_size, p))  # Batch size 64, input size p
+    # Initialize the model
+    model = MLP(num_hidden=num_hidden, num_outputs=1)
+    # model = FICNN(num_hidden_c=num_hidden, num_outputs=1, input_features_c=p, seed=rng)
+    params = model.init(init_rng, inp)
 
+    # Printing the model shows its attributes
+    print(model)
+
+    # rng = jax.random.PRNGKey(427)
+    # rng, inp_rng, init_rng = jax.random.split(rng, 3)
+    # inp = jax.random.normal(inp_rng, (batch_size, p))  # Batch size 64, input size p
     # Initialize the model
     # params = model.init(init_rng, inp)
 
-    # optimizer = optax.sgd(learning_rate=learning_rate, momentum=0.9)
+    optimizer = optax.sgd(learning_rate=learning_rate, momentum=0.9)
+    # optimizer = optax.adam(learning_rate=learning_rate, b1=0.9, b2=0.999, eps=1e-08)
 
-    model_save = yaml_data["save_path"] + str(rho) + str(drag_coeff)
-    print("model_save", model_save)
+    model_state = train_state.TrainState.create(
+        apply_fn=model.apply, params=params, tx=optimizer
+    )
 
-    trained_model_state = flax.core.freeze(restore_checkpoint(None, model_save, 7))
-    vf = (model, trained_model_state["params"])
+    train_data_loader = data.DataLoader(
+        train_data, batch_size=batch_size, shuffle=True, collate_fn=numpy_collate
+    )
+    trained_model_state = train_model(
+        model_state, train_data_loader, num_epochs=num_epochs
+    )
+
+    trained_model = model.bind(trained_model_state.params)
+
+    vf = (trained_model, trained_model_state.params)
+
+    # Load the trained model
+    # model = MLP(num_hidden=num_hidden, num_outputs=1)
+    # # Printing the model shows its attributes
+    # print(model)
+
+    # rng = jax.random.PRNGKey(427)
+    # rng, inp_rng, init_rng = jax.random.split(rng, 3)
+
+    # # Initialize the model
+    # # params = model.init(init_rng, inp)
+
+    # # optimizer = optax.sgd(learning_rate=learning_rate, momentum=0.9)
+
+    # model_save = yaml_data["save_path"] + str(rho) + str(drag_coeff)
+    # print("model_save", model_save)
+
+    # trained_model_state = flax.core.freeze(restore_checkpoint(None, model_save, 7))
+    # vf = (model, trained_model_state["params"])
 
     # Define the quadrotor parameters
     world_size = 10
@@ -1427,7 +1501,7 @@ def main():
 
     cost_differences = []
 
-    i = 5
+    i = 88
 
     waypoints = sample_waypoints(
         num_waypoints=num_waypoints,
@@ -1448,7 +1522,8 @@ def main():
     # /workspace/rotorpy/rotorpy/sim_figures/
     # figure_path = "/workspace/data_output/sim_figures_with_rho" + str(rho)
     # figure_path = "/home/user/code/quadrotor-drag-exp/sim_figures_with_rho" + str(rho) 
-    figure_path = "/home/user/code/quadrotor-drag-exp/sim_figures_with_rho" + str(rho) + "jaxopt"
+    # figure_path = "/home/user/code/quadrotor-drag-exp/sim_figures_with_rho" + str(rho) + "jaxopt"
+    figure_path = "/home/sanusha/codes/Quadrotor-planning-via-control-decomposition/scripts/plots_inf"
     if not os.path.exists(figure_path):
         os.mkdir(figure_path)
 
@@ -1456,42 +1531,42 @@ def main():
     total_time = 0
 
     # run simulation and compute cost for the minsnap trajectory with l1 adaptive ctrl
-    controller_l1adapt = L1SE3Control(quad_params, adaptive_alpha=0.3)
-    (
-        sim_result_l1,
-        trajectory_cost_l1,
-        _,
-        _,
-        summary_result_l1,
-    ) = run_simulation_and_compute_cost(
-        waypoints,
-        yaw_angles_zero,
-        vavg,
-        use_neural_network=False,
-        regularizer=None,
-        vehicle=vehicle,
-        controller=controller_l1adapt,
-        robust_c=rho,
-    )
+    # controller_l1adapt = L1SE3Control(quad_params, adaptive_alpha=0.3)
+    # (
+    #     sim_result_l1,
+    #     trajectory_cost_l1,
+    #     _,
+    #     _,
+    #     summary_result_l1,
+    # ) = run_simulation_and_compute_cost(
+    #     waypoints,
+    #     yaw_angles_zero,
+    #     vavg,
+    #     use_neural_network=False,
+    #     regularizer=None,
+    #     vehicle=vehicle,
+    #     controller=controller_l1adapt,
+    #     robust_c=rho,
+    # )
 
     # run simulation and compute cost for the minsnap trajectory with drag compensation
-    controller_with_drag_compensation = SE3Control(quad_params, drag_compensation=True)
-    (
-        sim_result_drag,
-        trajectory_cost_drag,
-        _,
-        _,
-        summary_result_drag,
-    ) = run_simulation_and_compute_cost(
-        waypoints,
-        yaw_angles_zero,
-        vavg,
-        use_neural_network=False,
-        regularizer=None,
-        vehicle=vehicle,
-        controller=controller_with_drag_compensation,
-        robust_c=rho,
-    )
+    # controller_with_drag_compensation = SE3Control(quad_params, drag_compensation=True)
+    # (
+    #     sim_result_drag,
+    #     trajectory_cost_drag,
+    #     _,
+    #     _,
+    #     summary_result_drag,
+    # ) = run_simulation_and_compute_cost(
+    #     waypoints,
+    #     yaw_angles_zero,
+    #     vavg,
+    #     use_neural_network=False,
+    #     regularizer=None,
+    #     vehicle=vehicle,
+    #     controller=controller_with_drag_compensation,
+    #     robust_c=rho,
+    # )
     # run simulation and compute cost for the initial trajectory
     (
         sim_result_init,
@@ -1537,26 +1612,26 @@ def main():
         print(f"Trajectory {i} l1 adaptive ctrl cost: {trajectory_cost_l1}")
         cost_diff = trajectory_cost_nn - trajectory_cost_init
         cost_differences.append((trajectory_cost_init, trajectory_cost_nn, cost_diff))
-        plot_results_only_for_drag(
-            sim_result_l1,
-            sim_result_nn,
-            waypoints,
-            trajectory_cost_l1,
-            trajectory_cost_nn,
-            # filename=figure_path + f"/sum_cost_3Dtrajectory_only_dragcomp_{i}_.png",
-            filename=figure_path + f"/jaxopt_sum_cost_3Dtrajectory_only_l1_{i}_.png",
-            waypoints_time=waypoints_time,
-        )
-        plot_results_only_for_drag(
-            sim_result_drag,
-            sim_result_nn,
-            waypoints,
-            trajectory_cost_drag,
-            trajectory_cost_nn,
-            # filename=figure_path + f"/sum_cost_3Dtrajectory_only_dragcomp_{i}_.png",
-            filename=figure_path + f"/jaxopt_sum_cost_3Dtrajectory_only_dragcomp_{i}_.png",
-            waypoints_time=waypoints_time,
-        )
+        # plot_results_only_for_drag(
+        #     sim_result_l1,
+        #     sim_result_nn,
+        #     waypoints,
+        #     trajectory_cost_l1,
+        #     trajectory_cost_nn,
+        #     # filename=figure_path + f"/sum_cost_3Dtrajectory_only_dragcomp_{i}_.png",
+        #     filename=figure_path + f"/jaxopt_sum_cost_3Dtrajectory_only_l1_{i}_.png",
+        #     waypoints_time=waypoints_time,
+        # )
+        # plot_results_only_for_drag(
+        #     sim_result_drag,
+        #     sim_result_nn,
+        #     waypoints,
+        #     trajectory_cost_drag,
+        #     trajectory_cost_nn,
+        #     # filename=figure_path + f"/sum_cost_3Dtrajectory_only_dragcomp_{i}_.png",
+        #     filename=figure_path + f"/jaxopt_sum_cost_3Dtrajectory_only_dragcomp_{i}_.png",
+        #     waypoints_time=waypoints_time,
+        # )
         # plot_results_with_drag(sim_result_init, sim_result_nn, sim_result_drag, waypoints, trajectory_cost_init, trajectory_cost_nn, trajectory_cost_drag, filename=figure_path + f"/sum_cost_3Dtrajectory_with_dragcomp_{i}.png", waypoints_time=waypoints_time)
         plot_results(
             sim_result_init,
@@ -1568,14 +1643,14 @@ def main():
             filename=figure_path + f"/jaxopt_sum_cost_3Dtrajectory_{i}_.png",
             waypoints_time=waypoints_time,
         )
-        plot_cumulative_tracking_error(
-            sim_result_init,
-            sim_result_nn,
-            sim_result_drag,
-            sim_result_l1,
-            # filename=figure_path + f"/cumulative_tracking_error_{i}_.png",
-            filename=figure_path + f"/jaxopt_cumulative_tracking_error_{i}_.png",
-        )
+        # plot_cumulative_tracking_error(
+        #     sim_result_init,
+        #     sim_result_nn,
+        #     sim_result_drag,
+        #     sim_result_l1,
+        #     # filename=figure_path + f"/cumulative_tracking_error_{i}_.png",
+        #     filename=figure_path + f"/jaxopt_cumulative_tracking_error_{i}_.png",
+        # )
 
     end_time = time.time()
     elapsed_time = end_time - start_time
