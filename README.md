@@ -1,4 +1,4 @@
-# Quad-LCA: A Layered Control Architecture for Quadrotor Planning
+# Quad-LCD: Layered Control Decomposition Enables Actuator-Feasible Quadrotor Trajectory Planning
 
 This repository contains the implementation of the methods described from "[A Data-Driven Approach to Synthesizing Dynamics-Aware Trajectories for Underactuated Robotic Systems](https://arxiv.org/abs/2307.13782)" and its extension specializing the contributions to a Crazyflie 2.0 "[Why Change Your Controller When You Can Change Your Planner: Drag-Aware Trajectory Generation for Quadrotor Systems](https://arxiv.org/abs/2401.04960)". In the original methods paper, we showed how one can derive a dynamics-aware trajectory generation problem for motion planning and use value iteration to approximately learn an objective function denoting deviation of the optimized reference trajectory and system executed trajectory. In this repository, we provide a streamlined API for data generation, training and evaluation. We leverage RotorPy as our simulator backbone to build experiments for testing across various mass, inertia and drag coefficient configurations.
 
@@ -18,7 +18,7 @@ Key contributions include:
 - `notebooks/`: Includes Python notebooks to help visualize and debug different components of the code.
 - `scripts/`: Contains Python scripts for 
 - `models/`: Pre-trained models and parameters for the unicycle and quadrotor systems.
-- `src/`: 
+- `src/`: Contains a C++ implementation for synchronizing bag messages recorded from system hardware
 - `Dockerfile`: Provides the dependencies to setup a container and an environment to support data generation, training and inference in simulation
 - `build.sh`: Builds the docker container
 - `run.sh`: Executes and run the docker container
@@ -30,7 +30,7 @@ To set up the environment, follow these steps:
 1. **Clone the repository**:
    ```bash
    git clone git@github.com:Nusha97/Quad-LCA.git
-   cd Quad-LCA
+   cd Quad-LCD
    ```
 
 2. **Build and run docker container** (optional but recommended):
